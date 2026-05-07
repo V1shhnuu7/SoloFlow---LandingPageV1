@@ -1,0 +1,2351 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SoloFlow — One link. Every client. Zero chaos.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&family=Instrument+Serif&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ─── tokens ───────────────────────────────────── */
+    :root {
+      --bg: oklch(98.6% 0.004 85);
+      --bg-soft: oklch(96.5% 0.006 85);
+      --ink: oklch(16% 0.01 260);
+      --ink-2: oklch(38% 0.012 260);
+      --ink-3: oklch(58% 0.012 260);
+      --line: oklch(90% 0.005 260);
+      --line-2: oklch(94% 0.005 260);
+      --brand: oklch(56% 0.19 258);
+      --brand-2: oklch(63% 0.18 258);
+      --brand-soft: oklch(95% 0.04 258);
+      --accent: oklch(76% 0.15 75);
+      --green: oklch(64% 0.15 155);
+      --radius: 14px;
+      --radius-lg: 22px;
+
+      --dark-bg: oklch(13% 0.012 260);
+      --dark-bg-2: oklch(17% 0.012 260);
+      --dark-line: oklch(26% 0.012 260);
+      --dark-ink: oklch(98% 0.005 85);
+      --dark-ink-2: oklch(72% 0.012 260);
+
+      --pad-x: clamp(20px, 5vw, 80px);
+      --section-y: clamp(80px, 9vw, 140px);
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 oklch(62% 0.18 150 / 0.7);
+      }
+
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px oklch(62% 0.18 150 / 0);
+      }
+
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 oklch(62% 0.18 150 / 0);
+      }
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "ss01", "cv11";
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* density (set on body via tweak) */
+    body[data-density="compact"] {
+      --section-y: clamp(60px, 6vw, 96px);
+    }
+
+    body[data-density="spacious"] {
+      --section-y: clamp(110px, 12vw, 180px);
+    }
+
+    /* light/dark base mode (tweak) */
+    body[data-mode="dark"] {
+      --bg: oklch(13% 0.012 260);
+      --bg-soft: oklch(17% 0.012 260);
+      --ink: oklch(98% 0.005 85);
+      --ink-2: oklch(78% 0.012 260);
+      --ink-3: oklch(60% 0.012 260);
+      --line: oklch(26% 0.012 260);
+      --line-2: oklch(22% 0.012 260);
+      --brand-soft: oklch(28% 0.05 258);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Geist', sans-serif;
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    body[data-type="serif"] h1,
+    body[data-type="serif"] h2 {
+      font-family: 'Instrument Serif', serif;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+    }
+
+    body[data-type="mono"] h1,
+    body[data-type="mono"] h2 {
+      font-family: 'Geist Mono', monospace;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+    }
+
+    .mono {
+      font-family: 'Geist Mono', monospace;
+      font-feature-settings: normal;
+    }
+
+    /* ─── shared ───────────────────────────────────── */
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 var(--pad-x);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Geist Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--brand);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 14.5px;
+      transition: all .25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    @property --shiny-x {
+      syntax: '<percentage>';
+      inherits: false;
+      initial-value: 100%;
+    }
+
+    @keyframes shiny-btn {
+      0% {
+        --shiny-x: 100%;
+      }
+
+      100% {
+        --shiny-x: -100%;
+      }
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--bg);
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        inset 0 1px 0 oklch(100% 0 0 / 0.15),
+        0 1px 2px oklch(0% 0 0 / 0.18),
+        0 0 0 1px oklch(0% 0 0 / 0.06);
+    }
+
+    .btn-primary::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(-75deg, transparent calc(var(--shiny-x) + 20%), color-mix(in oklab, var(--bg) 15%, transparent) calc(var(--shiny-x) + 25%), transparent calc(var(--shiny-x) + 100%));
+      animation: shiny-btn 3s infinite linear;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        inset 0 1px 0 oklch(100% 0 0 / 0.2),
+        0 8px 16px -4px oklch(0% 0 0 / 0.15),
+        0 4px 12px -2px oklch(0% 0 0 / 0.1),
+        0 0 0 1px oklch(0% 0 0 / 0.06);
+    }
+
+    .btn-ghost {
+      color: var(--ink);
+      border: 1px solid var(--line);
+      background: var(--bg);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-soft);
+    }
+
+    /* ─── nav ───────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      backdrop-filter: blur(14px);
+      background: color-mix(in oklab, var(--bg) 78%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--line) 60%, transparent);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 var(--pad-x);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      position: relative;
+      background:
+        radial-gradient(circle at 10px 8px, var(--brand) 5.5px, transparent 6px),
+        radial-gradient(circle at 28px 6px, color-mix(in oklab, var(--brand) 60%, transparent) 3.5px, transparent 4px),
+        radial-gradient(circle at 4px 26px, color-mix(in oklab, var(--brand) 60%, black) 3.5px, transparent 4px),
+        radial-gradient(circle at 24px 26px, color-mix(in oklab, var(--brand) 80%, black) 5.5px, transparent 6px);
+      border-radius: 0;
+      box-shadow: none;
+      flex-shrink: 0;
+    }
+
+    .logo-mark::after {
+      content: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      font-size: 14px;
+      color: var(--ink-2);
+      margin-left: auto;
+      margin-right: 32px;
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+    }
+
+    .nav-cta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    @media (max-width: 760px) {
+      .nav-links {
+        display: none;
+      }
+    }
+
+    /* ─── hero ───────────────────────────────────── */
+    .hero {
+      position: relative;
+      padding: 64px 0 40px;
+      overflow: hidden;
+    }
+
+    @keyframes grid-scroll {
+      0% {
+        background-position: 0 0, 0 0, 0 0;
+      }
+      100% {
+        background-position: 0 0, 64px 64px, 64px 64px;
+      }
+    }
+
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse 70% 50% at 50% 0%, color-mix(in oklab, var(--brand) 12%, transparent), transparent 70%);
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 80%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      text-align: center;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 var(--pad-x);
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px 6px 6px;
+      border: 1px solid var(--line);
+      border-radius: 100px;
+      background: var(--bg);
+      font-size: 13px;
+      color: var(--ink-2);
+      margin-bottom: 24px;
+      box-shadow: 0 1px 2px oklch(0% 0 0 / 0.04);
+    }
+
+    .hero-tag .pill {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 3px 9px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 500;
+      font-family: 'Geist Mono', monospace;
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 5.5vw, 76px);
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      margin: 0 0 20px;
+    }
+
+    .word-rotator {
+      display: inline-block;
+      vertical-align: top;
+      overflow: hidden;
+      height: 1.5em;
+      margin-bottom: -0.45em;
+      position: relative;
+      top: 0.05em;
+      padding-right: 0.15em;
+    }
+
+    .word-rotator-inner {
+      display: flex;
+      flex-direction: column;
+      animation: rotateWords 8s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .word-rotator .accent-word {
+      display: block;
+      height: 1.5em;
+      line-height: 1.05em;
+    }
+
+    @keyframes rotateWords {
+
+      0%,
+      20% {
+        transform: translateY(0);
+      }
+
+      25%,
+      45% {
+        transform: translateY(-1.5em);
+      }
+
+      50%,
+      70% {
+        transform: translateY(-3.0em);
+      }
+
+      75%,
+      95% {
+        transform: translateY(-4.5em);
+      }
+
+      100% {
+        transform: translateY(-6.0em);
+      }
+    }
+
+    .hero h1 .accent-word {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--brand);
+      letter-spacing: -0.02em;
+    }
+
+    body[data-type="serif"] .hero h1 .accent-word {
+      font-family: 'Geist', sans-serif;
+      font-style: normal;
+    }
+
+    .hero p.lede {
+      font-size: clamp(16px, 1.4vw, 19px);
+      color: var(--ink-2);
+      max-width: 620px;
+      margin: 0 auto 32px;
+      line-height: 1.5;
+      text-wrap: pretty;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta {
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      color: var(--ink-3);
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-meta span::before {
+      content: "";
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    /* ─── animated product showcase (the centerpiece) ─── */
+    .showcase {
+      position: relative;
+      margin: 56px auto 0;
+      max-width: 1180px;
+      padding: 0 var(--pad-x);
+    }
+
+    .showcase-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 5px;
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      width: fit-content;
+      margin: 0 auto 22px;
+      position: relative;
+      box-shadow: 0 1px 2px oklch(0% 0 0 / 0.03);
+    }
+
+    .showcase-tab {
+      position: relative;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--ink-3);
+      z-index: 2;
+      transition: color .25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .showcase-tab.active {
+      color: var(--ink);
+    }
+
+    .showcase-tab svg {
+      width: 14px;
+      height: 14px;
+      opacity: .7;
+    }
+
+    .showcase-tab .tab-progress {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: var(--brand);
+      transform-origin: left;
+    }
+
+    .showcase-tab-bg {
+      position: absolute;
+      top: 5px;
+      bottom: 5px;
+      background: var(--bg);
+      border-radius: 10px;
+      box-shadow: 0 1px 3px oklch(0% 0 0 / 0.08), 0 0 0 1px var(--line-2);
+      z-index: 1;
+      transition: left .45s cubic-bezier(.65, .05, .36, 1), width .45s cubic-bezier(.65, .05, .36, 1);
+    }
+
+    @media (max-width: 740px) {
+      .showcase-tabs {
+        flex-wrap: wrap;
+      }
+
+      .showcase-tab {
+        padding: 8px 12px;
+        font-size: 12.5px;
+      }
+    }
+
+    .frame {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--bg);
+      box-shadow:
+        0 1px 0 oklch(100% 0 0 / 0.6) inset,
+        0 40px 100px -20px oklch(0% 0 0 / 0.15),
+        0 8px 22px -8px oklch(0% 0 0 / 0.1);
+      overflow: hidden;
+    }
+
+    .frame-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg-soft);
+    }
+
+    .frame-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .frame-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--line);
+    }
+
+    .frame-dot:nth-child(1) {
+      background: oklch(72% 0.16 30);
+    }
+
+    .frame-dot:nth-child(2) {
+      background: oklch(80% 0.13 90);
+    }
+
+    .frame-dot:nth-child(3) {
+      background: oklch(72% 0.14 145);
+    }
+
+    .frame-url {
+      flex: 1;
+      text-align: center;
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      color: var(--ink-3);
+      padding: 4px 12px;
+      background: var(--bg);
+      border: 1px solid var(--line-2);
+      border-radius: 8px;
+      max-width: 380px;
+      margin: 0 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .frame-url .url-live {
+      color: var(--green);
+      margin-left: 8px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .frame-body {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: var(--bg);
+    }
+
+    @media (max-width: 760px) {
+      .frame-body {
+        aspect-ratio: 4/3;
+      }
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateY(8px) scale(0.995);
+      transition: opacity .55s ease, transform .55s cubic-bezier(.2, .7, .2, 1);
+      pointer-events: none;
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .scene.active {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    /* ─── section common ─── */
+    section {
+      position: relative;
+    }
+
+    .sec-head {
+      display: grid;
+      gap: 14px;
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 56px;
+    }
+
+    .sec-head h2 {
+      font-size: clamp(36px, 4.5vw, 60px);
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      text-wrap: balance;
+    }
+
+    .sec-head h2 em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--brand);
+    }
+
+    .sec-head p {
+      color: var(--ink-2);
+      font-size: 17px;
+      max-width: 560px;
+      margin: 0 auto;
+      text-wrap: pretty;
+    }
+
+    .sec-head .eyebrow {
+      justify-content: center;
+    }
+
+    /* ─── replaces strip ─── */
+    .replaces {
+      padding: 56px 0 32px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background:
+        repeating-linear-gradient(45deg, transparent 0 12px, color-mix(in oklab, var(--line) 40%, transparent) 12px 13px);
+      background-size: 18px 18px;
+      background-clip: padding-box;
+      position: relative;
+    }
+
+    .replaces::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--bg);
+      mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+      z-index: 0;
+    }
+
+    .replaces-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .replaces-label {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11.5px;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .replaces-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .repl-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 100px;
+      font-size: 13px;
+      color: var(--ink-2);
+      text-decoration: line-through;
+      text-decoration-color: oklch(70% 0.18 30 / 0.7);
+      text-decoration-thickness: 1.5px;
+    }
+
+    .repl-chip .ic {
+      width: 14px;
+      height: 14px;
+      background: var(--bg-soft);
+      border-radius: 3px;
+      display: inline-block;
+      border: 1px solid var(--line);
+    }
+
+    /* ─── feature blocks ─── */
+    .features {
+      padding: var(--section-y) 0;
+    }
+
+    .feature-row {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 80px;
+      align-items: center;
+      padding: 50px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .feature-row:first-of-type {
+      border-top: none;
+    }
+
+    .feature-row.flip {
+      grid-template-columns: 1.15fr 1fr;
+    }
+
+    .feature-row.flip .feature-copy {
+      order: 2;
+    }
+
+    @media (max-width: 900px) {
+
+      .feature-row,
+      .feature-row.flip {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+
+      .feature-row.flip .feature-copy {
+        order: 0;
+      }
+    }
+
+    .feature-copy .eyebrow {
+      margin-bottom: 18px;
+    }
+
+    .feature-copy h3 {
+      font-size: clamp(28px, 2.6vw, 38px);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      margin-bottom: 14px;
+      text-wrap: balance;
+    }
+
+    .feature-copy p {
+      color: var(--ink-2);
+      font-size: 16.5px;
+      margin: 0 0 22px;
+      text-wrap: pretty;
+    }
+
+    .feature-bullets {
+      display: grid;
+      gap: 10px;
+    }
+
+    .feature-bullets li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      list-style: none;
+      font-size: 14.5px;
+      color: var(--ink-2);
+    }
+
+    .feature-bullets li::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--brand-soft);
+      border: 1.5px solid var(--brand);
+      margin-top: 2px;
+      flex-shrink: 0;
+      background-image: linear-gradient(135deg, transparent 35%, var(--brand) 35%, var(--brand) 65%, transparent 65%);
+    }
+
+    .feature-mock {
+      position: relative;
+    }
+
+    /* ─── how it works ─── */
+    .how {
+      padding: var(--section-y) 0;
+      background: var(--dark-bg);
+      color: var(--dark-ink);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .how::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--dark-ink) 8%, transparent) 1px, transparent 0);
+      background-size: 28px 28px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black, transparent 80%);
+    }
+
+    .how .sec-head h2 {
+      color: var(--dark-ink);
+    }
+
+    .how .sec-head h2 em {
+      color: oklch(78% 0.16 75);
+    }
+
+    .how .sec-head p {
+      color: var(--dark-ink-2);
+    }
+
+    .how .eyebrow {
+      color: var(--dark-ink-2);
+    }
+
+    .steps {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 860px) {
+      .steps {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .step {
+      border: 1px solid var(--dark-line);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      background: var(--dark-bg-2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-num {
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      color: oklch(78% 0.16 75);
+      margin-bottom: 22px;
+    }
+
+    .step h4 {
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      color: var(--dark-ink-2);
+      font-size: 14px;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .step-visual {
+      margin-top: 22px;
+      height: 130px;
+      border-radius: 12px;
+      border: 1px solid var(--dark-line);
+      background: oklch(15% 0.012 260);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ─── comparison table ─── */
+    .compare {
+      padding: var(--section-y) 0;
+    }
+
+    .compare-table {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--bg);
+      box-shadow: 0 1px 2px oklch(0% 0 0 / 0.03);
+    }
+
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1.4fr 1.6fr 1.2fr;
+      border-top: 1px solid var(--line);
+    }
+
+    .compare-row:first-child {
+      border-top: none;
+    }
+
+    .compare-cell {
+      padding: 20px 24px;
+      font-size: 14.5px;
+      color: var(--ink-2);
+      border-left: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .compare-cell:first-child {
+      border-left: none;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .compare-row.head .compare-cell {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-3);
+      background: var(--bg-soft);
+      padding: 14px 24px;
+    }
+
+    .compare-row.head .compare-cell.brand-col {
+      color: var(--brand);
+    }
+
+    .compare-cell.brand-col {
+      background: color-mix(in oklab, var(--brand-soft) 50%, var(--bg));
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .x-mark {
+      color: oklch(60% 0.18 30);
+    }
+
+    .check {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--brand);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 720px) {
+      .compare-row {
+        grid-template-columns: 1fr;
+      }
+
+      .compare-cell {
+        border-left: none;
+        border-top: 1px solid var(--line-2);
+      }
+
+      .compare-row .compare-cell:first-child {
+        border-top: none;
+      }
+    }
+
+    /* ─── stats bar ─── */
+    .stats {
+      padding: 40px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 20px;
+      border-left: 1px solid var(--line);
+    }
+
+    .stat:first-child {
+      border-left: none;
+    }
+
+    .stat-num {
+      font-size: clamp(32px, 3.5vw, 44px);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      font-family: 'Geist', sans-serif;
+    }
+
+    .stat-num em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--brand);
+    }
+
+    .stat-label {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11.5px;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 760px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stat:nth-child(3) {
+        border-left: none;
+        border-top: 1px solid var(--line);
+      }
+
+      .stat:nth-child(4) {
+        border-top: 1px solid var(--line);
+      }
+    }
+
+    /* ─── testimonials ─── */
+    .testimonials {
+      padding: var(--section-y) 0;
+    }
+
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .test-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .test-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .test-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -12px oklch(0% 0 0 / 0.12);
+    }
+
+    .test-quote {
+      font-size: 17px;
+      line-height: 1.45;
+      letter-spacing: -0.012em;
+      color: var(--ink);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    .test-author {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      border-top: 1px solid var(--line-2);
+      padding-top: 18px;
+      margin-top: auto;
+    }
+
+    .test-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), oklch(60% 0.18 280));
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .test-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .test-role {
+      font-size: 12.5px;
+      color: var(--ink-3);
+    }
+
+    /* ─── pricing ─── */
+    .pricing {
+      padding: var(--section-y) 0;
+    }
+
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .price-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .price-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      position: relative;
+    }
+
+    .price-card.featured {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .price-card.featured .price-name,
+    .price-card.featured .price-features li,
+    .price-card.featured .price-tag .price-amt {
+      color: var(--bg);
+    }
+
+    .price-card.featured .price-sub,
+    .price-card.featured .price-tag .price-per {
+      color: oklch(70% 0.012 260);
+    }
+
+    .price-card.featured .btn-primary {
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    .price-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .price-sub {
+      font-size: 13px;
+      color: var(--ink-3);
+      margin-top: 4px;
+    }
+
+    .price-tag {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .price-amt {
+      font-size: 42px;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      color: var(--ink);
+    }
+
+    .price-per {
+      font-size: 13px;
+      color: var(--ink-3);
+    }
+
+    .price-features {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .price-features li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+
+    .price-features li::before {
+      content: "+";
+      color: var(--brand);
+      font-family: 'Geist Mono', monospace;
+      font-size: 13px;
+      margin-top: 1px;
+    }
+
+    .price-card.featured .price-features li::before {
+      color: oklch(78% 0.16 75);
+    }
+
+    .price-badge {
+      position: absolute;
+      top: -10px;
+      right: 24px;
+      background: oklch(78% 0.16 75);
+      color: var(--ink);
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── faq ─── */
+    .faq {
+      padding: var(--section-y) 0;
+    }
+
+    .faq-list {
+      max-width: 820px;
+      margin: 0 auto;
+      border-top: 1px solid var(--line);
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .faq-q {
+      width: 100%;
+      text-align: left;
+      padding: 22px 0;
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.015em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .faq-q-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform .3s ease, background .25s ease;
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+
+    .faq-item[data-open="true"] .faq-q-icon {
+      transform: rotate(45deg);
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .faq-a {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height .35s ease;
+    }
+
+    .faq-item[data-open="true"] .faq-a {
+      max-height: 320px;
+    }
+
+    .faq-a p {
+      color: var(--ink-2);
+      font-size: 15px;
+      line-height: 1.55;
+      padding: 0 0 24px;
+      margin: 0;
+      max-width: 640px;
+      text-wrap: pretty;
+    }
+
+    /* ─── final cta ─── */
+    .cta-final {
+      margin: 0 var(--pad-x) 64px;
+      border-radius: 28px;
+      background: var(--dark-bg);
+      color: var(--dark-ink);
+      padding: clamp(50px, 7vw, 96px) clamp(28px, 5vw, 80px);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .cta-final::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 0%, color-mix(in oklab, var(--brand) 35%, transparent), transparent 70%),
+        radial-gradient(ellipse 50% 40% at 50% 100%, color-mix(in oklab, oklch(60% 0.18 75) 25%, transparent), transparent 70%);
+    }
+
+    .cta-final::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--dark-ink) 12%, transparent) 1px, transparent 0);
+      background-size: 28px 28px;
+      mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black, transparent);
+      pointer-events: none;
+    }
+
+    .cta-final-inner {
+      position: relative;
+      z-index: 2;
+    }
+
+    .cta-final h2 {
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+      margin-bottom: 18px;
+    }
+
+    .cta-final h2 em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: oklch(82% 0.14 75);
+    }
+
+    .cta-final p {
+      color: var(--dark-ink-2);
+      font-size: 17px;
+      margin: 0 auto 32px;
+      max-width: 540px;
+    }
+
+    .cta-final .btn-primary {
+      background: var(--dark-ink);
+      color: var(--dark-bg);
+      padding: 14px 22px;
+      font-size: 15px;
+    }
+
+    /* ─── footer ─── */
+    .footer {
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-3);
+      font-size: 13px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 22px;
+    }
+
+    .footer-links a:hover {
+      color: var(--ink);
+    }
+
+    /* ─── tweaks panel polish ─── */
+    .tweaks-panel-host {
+      z-index: 100;
+    }
+
+    /* ─── modals ─── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: oklch(0% 0 0 / 0.4);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 440px;
+      padding: 32px;
+      position: relative;
+      box-shadow: 0 24px 60px -12px oklch(0% 0 0 / 0.2);
+      transform: scale(0.95);
+      transition: transform .3s ease;
+    }
+
+    .modal-overlay.open .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: transparent;
+      border: none;
+      color: var(--ink-3);
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .modal-close:hover {
+      color: var(--ink);
+    }
+
+    .modal-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: var(--bg-soft);
+      color: var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      border: 1px solid var(--line);
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .modal-desc {
+      font-size: 14.5px;
+      color: var(--ink-2);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .modal-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .input-group {
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+      margin-left: 4px;
+    }
+
+    .input-control {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 14.5px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .input-control:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px var(--brand-soft);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ─── helpers ─── */
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      position: relative;
+      display: inline-block;
+    }
+
+    .pulse-dot::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1.5px solid var(--green);
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.6);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1.6);
+        opacity: 0;
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+    }
+
+    .reveal.in {
+      animation: fadeUp .7s cubic-bezier(.2, .7, .2, 1) forwards;
+    }
+
+    /* ─── magic ui components ─── */
+    .magic-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .magic-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(350px circle at var(--mouse-x, -350px) var(--mouse-y, -350px), color-mix(in oklab, var(--ink) 4%, transparent), transparent 100%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: inherit;
+    }
+
+    body[data-mode="dark"] .magic-card::before,
+    .step::before {
+      background: radial-gradient(350px circle at var(--mouse-x, -350px) var(--mouse-y, -350px), color-mix(in oklab, var(--dark-ink) 8%, transparent), transparent 100%);
+    }
+
+    .magic-card:hover::before {
+      opacity: 1;
+    }
+
+    .magic-card>* {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+
+<body data-mode="light" data-density="default" data-type="sans">
+
+  <!-- ─── nav ─── -->
+  <header class="nav" data-screen-label="00 Nav">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <span class="logo-mark"></span>
+        <span>SoloFlow</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="nav-cta">
+        <a href="#cta" class="btn btn-primary" style="padding:8px 14px;font-size:13.5px;">Join waitlist</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── hero ─── -->
+  <section class="hero" data-screen-label="01 Hero">
+    <div class="hero-grid-bg" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <div class="hero-tag">
+        <span class="pill">NEW</span>
+        <span>Founding members get 50% off — forever</span>
+        <span style="color:var(--ink-3);">→</span>
+      </div>
+      <h1>
+        One link to run your entire<br />
+        <span class="word-rotator"><span class="word-rotator-inner"><span class="accent-word">freelance</span><span
+              class="accent-word">design</span><span class="accent-word">consulting</span><span
+              class="accent-word">agency</span><span class="accent-word">freelance</span></span></span> business.
+      </h1>
+      <p class="lede">
+        SoloFlow replaces the six tools you stitch together every project.
+        Client portals, project tracking, invoicing, payments — one workspace, one link, zero chaos.
+      </p>
+      <div class="hero-ctas">
+        <a href="#cta" class="btn btn-primary">Join the waitlist <span style="opacity:.65;">→</span></a>
+        <a href="#showcase" class="btn btn-ghost">See it in action</a>
+      </div>
+
+      <div class="hero-meta">
+        <span>Free to start</span>
+        <span>No credit card</span>
+        <span>Razorpay &amp; Stripe ready</span>
+      </div>
+    </div>
+
+    <!-- the centerpiece animated showcase -->
+    <div class="showcase" id="showcase">
+      <div class="showcase-tabs" id="showcase-tabs">
+        <span class="showcase-tab-bg" id="tab-bg"></span>
+        <button class="showcase-tab active" data-scene="0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 21c0-4 4-7 8-7s8 3 8 7" />
+          </svg>
+          Client portal
+          <span class="tab-progress" style="transform:scaleX(0)"></span>
+        </button>
+        <button class="showcase-tab" data-scene="1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M3 10h18M9 4v16" />
+          </svg>
+          Projects
+          <span class="tab-progress" style="transform:scaleX(0)"></span>
+        </button>
+        <button class="showcase-tab" data-scene="2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <path d="M3 10h18M7 15h4" />
+          </svg>
+          Invoices
+          <span class="tab-progress" style="transform:scaleX(0)"></span>
+        </button>
+        <button class="showcase-tab" data-scene="3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 6H9.5a2.5 2.5 0 0 0 0 5h5a2.5 2.5 0 0 1 0 5H6" />
+          </svg>
+          Payments
+          <span class="tab-progress" style="transform:scaleX(0)"></span>
+        </button>
+      </div>
+
+      <div class="frame">
+        <div class="frame-bar">
+          <div class="frame-dots"><span class="frame-dot"></span><span class="frame-dot"></span><span
+              class="frame-dot"></span></div>
+          <div class="frame-url">
+            app.soloflow.in/client/<strong style="color:var(--ink);">aman-verma</strong>
+            <span class="url-live">● LIVE</span>
+          </div>
+          <div style="width:60px;"></div>
+        </div>
+        <div class="frame-body" id="scenes"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── replaces strip ─── -->
+  <section class="replaces" data-screen-label="02 Replaces strip" aria-label="Tools SoloFlow replaces">
+    <div class="wrap replaces-inner">
+      <span class="replaces-label">Replaces</span>
+      <div class="replaces-list">
+        <span class="repl-chip"><span class="ic" style="background:#25D366;border-color:#25D366;"></span>WhatsApp
+          threads</span>
+        <span class="repl-chip"><span class="ic" style="background:#FFBD03;border-color:#FFBD03;"></span>Google
+          Drive</span>
+        <span class="repl-chip"><span class="ic" style="background:#107C41;border-color:#107C41;"></span>Excel
+          invoices</span>
+        <span class="repl-chip"><span class="ic" style="background:#F22F46;border-color:#F22F46;"></span>Trello /
+          Notion</span>
+        <span class="repl-chip"><span class="ic" style="background:#3D8BFD;border-color:#3D8BFD;"></span>Email
+          attachments</span>
+        <span class="repl-chip"><span class="ic" style="background:#0066FF;border-color:#0066FF;"></span>Manual
+          reminders</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── stats bar ─── -->
+  <section class="stats" data-screen-label="03 Stats">
+    <div class="wrap">
+      <div class="stats-grid">
+        <div class="stat">
+          <div class="stat-num">6<em>×</em></div>
+          <div class="stat-label">Faster Payments</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">60<em>s</em></div>
+          <div class="stat-label">To Set Up</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">1</div>
+          <div class="stat-label">Link, Every Client</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Tools To Juggle</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── features ─── -->
+  <section class="features wrap" id="features" data-screen-label="04 Features">
+    <div class="sec-head">
+      <span class="eyebrow">Core features</span>
+      <h2>Built for the way <em>you actually</em> work.</h2>
+      <p>Four primitives. Endlessly composable. Replaces the messy stack you've cobbled together.</p>
+    </div>
+
+    <!-- feature 1: client portal -->
+    <div class="feature-row">
+      <div class="feature-copy">
+        <span class="eyebrow">Client portal</span>
+        <h3>Send one link. Forever.</h3>
+        <p>Every client gets a permanent, branded URL they can bookmark — progress, files, invoices, feedback, all in
+          one place. No more "did you see my message?"</p>
+        <ul class="feature-bullets">
+          <li>Permanent client URL — survives projects</li>
+          <li>Custom domain &amp; branding (Pro)</li>
+          <li>One source of truth for both sides</li>
+        </ul>
+      </div>
+      <div class="feature-mock" id="mock-portal"></div>
+    </div>
+
+    <!-- feature 2: projects -->
+    <div class="feature-row flip">
+      <div class="feature-copy">
+        <span class="eyebrow">Project management</span>
+        <h3>Milestones your client can actually read.</h3>
+        <p>Every project has a clean kanban — not a wall of tickets. Clients see status without you sending another
+          update.</p>
+        <ul class="feature-bullets">
+          <li>Kanban + timeline views</li>
+          <li>File-attached milestones</li>
+          <li>Real-time progress sync</li>
+        </ul>
+      </div>
+      <div class="feature-mock" id="mock-projects"></div>
+    </div>
+
+    <!-- feature 3: invoices -->
+    <div class="feature-row">
+      <div class="feature-copy">
+        <span class="eyebrow">Invoice management</span>
+        <h3>Invoices that pay themselves.</h3>
+        <p>Generate GST-ready invoices in seconds. Clients click. Money lands. Automated WhatsApp reminders chase the
+          rest, professionally.</p>
+        <ul class="feature-bullets">
+          <li>GST &amp; international invoicing</li>
+          <li>Automatic WhatsApp reminders</li>
+          <li>One-click recurring billing</li>
+        </ul>
+      </div>
+      <div class="feature-mock" id="mock-invoices"></div>
+    </div>
+
+    <!-- feature 4: payments -->
+    <div class="feature-row flip">
+      <div class="feature-copy">
+        <span class="eyebrow">Payments</span>
+        <h3>Razorpay &amp; Stripe, built in.</h3>
+        <p>Connect once. Get paid forever. Local clients via UPI &amp; Razorpay, international via Stripe — all in the
+          same dashboard.</p>
+        <ul class="feature-bullets">
+          <li>UPI, cards, netbanking, international</li>
+          <li>Auto-reconciliation with invoices</li>
+          <li>Same-day settlement on Razorpay</li>
+        </ul>
+      </div>
+      <div class="feature-mock" id="mock-payments"></div>
+    </div>
+  </section>
+
+  <!-- ─── how it works ─── -->
+  <section class="how" id="how" data-screen-label="05 How it works">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow" style="color:oklch(78% 0.16 75);">How it works</span>
+        <h2>Live in <em>under sixty</em> seconds.</h2>
+        <p>No onboarding calls. No setup wizard. No learning curve. Just three steps.</p>
+      </div>
+      <div class="steps">
+        <div class="step magic-card">
+          <div class="step-num">01 / SIGN UP</div>
+          <h4>Email + magic link</h4>
+          <p>No credit card, no lengthy onboarding. You're inside in 10 seconds flat.</p>
+          <div class="step-visual" id="step-visual-1"></div>
+        </div>
+        <div class="step magic-card">
+          <div class="step-num">02 / ADD CLIENT</div>
+          <h4>Spin up a portal</h4>
+          <p>Drop in client name, project, budget. We mint a permanent URL.</p>
+          <div class="step-visual" id="step-visual-2"></div>
+        </div>
+        <div class="step magic-card">
+          <div class="step-num">03 / SHARE LINK</div>
+          <h4>Get paid faster</h4>
+          <p>Send via WhatsApp or email. Clients pay in one click. You see it land.</p>
+          <div class="step-visual" id="step-visual-3"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── comparison ─── -->
+  <section class="compare wrap" id="compare" data-screen-label="06 Comparison">
+    <div class="sec-head">
+      <span class="eyebrow">Stack comparison</span>
+      <h2>Six tools, or <em>one</em>.</h2>
+      <p>What you're using now versus what you could be using.</p>
+    </div>
+    <div class="compare-table">
+      <div class="compare-row head">
+        <div class="compare-cell">What you do</div>
+        <div class="compare-cell">Today (the stack)</div>
+        <div class="compare-cell brand-col">SoloFlow</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Client communication</div>
+        <div class="compare-cell">WhatsApp, Email, Meet</div>
+        <div class="compare-cell brand-col"><span class="check">✓</span> Built into the portal</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Project tracking</div>
+        <div class="compare-cell">Trello, Notion, Asana</div>
+        <div class="compare-cell brand-col"><span class="check">✓</span> Native kanban + timeline</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Invoicing</div>
+        <div class="compare-cell">Excel, Zoho, Invoice.to</div>
+        <div class="compare-cell brand-col"><span class="check">✓</span> Generated &amp; tracked</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Payment collection</div>
+        <div class="compare-cell">Manual transfers, PayPal</div>
+        <div class="compare-cell brand-col"><span class="check">✓</span> Razorpay + Stripe inline</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Client management</div>
+        <div class="compare-cell">Spreadsheets &amp; CRMs</div>
+        <div class="compare-cell brand-col"><span class="check">✓</span> Centralized client history</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">File sharing</div>
+        <div class="compare-cell">Drive, Dropbox, email</div>
+        <div class="compare-cell brand-col"><span class="check">✓</span> Project-attached storage</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── testimonials ─── -->
+  <section class="testimonials wrap" data-screen-label="07 Testimonials">
+    <div class="sec-head">
+      <span class="eyebrow">From the waitlist</span>
+      <h2>Freelancers tired of <em>chasing payments.</em></h2>
+      <p>Early users told us what's broken. Then they told us what they'd pay for.</p>
+    </div>
+    <div class="test-grid">
+      <article class="test-card magic-card">
+        <p class="test-quote">"Following up for payments is honestly the most frustrating part of freelancing. This
+          makes everything feel professional."</p>
+        <div class="test-author">
+          <span class="test-avatar">T</span>
+          <div>
+            <div class="test-name">Thanish</div>
+            <div class="test-role">Beta · Freelance creative artist</div>
+          </div>
+        </div>
+      </article>
+      <article class="test-card magic-card">
+        <p class="test-quote">"I forget pending payments when juggling clients. SoloFlow keeps me on top of every
+          invoice without lifting a finger."</p>
+        <div class="test-author">
+          <span class="test-avatar">H</span>
+          <div>
+            <div class="test-name">Hithend</div>
+            <div class="test-role">Early adopter · Designer</div>
+          </div>
+        </div>
+      </article>
+      <article class="test-card magic-card">
+        <p class="test-quote">"The portal makes me look like a studio, not a freelancer. Clients pay faster because the
+          workflow respects their time."</p>
+        <div class="test-author">
+          <span class="test-avatar">S</span>
+          <div>
+            <div class="test-name">Sanjay</div>
+            <div class="test-role">Verified user · Designer</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ─── pricing ─── -->
+  <section class="pricing wrap" id="pricing" data-screen-label="08 Pricing">
+    <div class="sec-head">
+      <span class="eyebrow">Founding pricing</span>
+      <h2>Founding member pricing.<br />Locked in <em>forever.</em></h2>
+      <p>Early access pricing — increases after launch. Limited spots.</p>
+      <div style="display:flex; justify-content:center; gap:8px; margin-top:24px;">
+        <button id="client-local" class="btn btn-primary">I work with local clients</button>
+        <button id="client-intl" class="btn btn-ghost">I work with international clients</button>
+      </div>
+      <p style="font-size:13px; color:var(--ink-3); margin-top:12px;">Pricing adapts based on how you work</p>
+    </div>
+    <div class="price-grid">
+      <article class="price-card magic-card">
+        <div>
+          <div class="price-name">Free</div>
+          <div class="price-sub">Trying SoloFlow</div>
+        </div>
+        <div class="price-tag">
+          <span class="price-amt">Free</span>
+        </div>
+        <ul class="price-features">
+          <li>1 client portal</li>
+          <li>Milestone tracking</li>
+          <li>File sharing</li>
+          <li>Early access badge</li>
+        </ul>
+        <button class="btn btn-ghost btn-lock-price" data-action="https://formspree.io/f/mdaygdeq"
+          style="justify-content:center;width:100%;">Start free</button>
+      </article>
+
+      <article class="price-card featured magic-card">
+        <span class="price-badge">Most popular</span>
+        <div>
+          <div class="price-name">Pro</div>
+          <div class="price-sub">Regular freelancers</div>
+        </div>
+        <div class="price-tag">
+          <span class="price-amt">₹499</span>
+          <span class="price-per">/ month <span
+              style="text-decoration:line-through;opacity:.55;margin-left:6px;">₹699</span></span>
+        </div>
+        <ul class="price-features">
+          <li>Unlimited portals</li>
+          <li>Custom branding &amp; domain</li>
+          <li>GST + international invoicing</li>
+          <li>Automated WhatsApp reminders</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="btn btn-primary btn-lock-price" style="justify-content:center;width:100%;">Lock founding
+          price</button>
+      </article>
+
+      <article class="price-card magic-card">
+        <div>
+          <div class="price-name">Per project</div>
+          <div class="price-sub">Occasional projects</div>
+        </div>
+        <div class="price-tag">
+          <span class="price-amt">₹169</span>
+          <span class="price-per">/ project</span>
+        </div>
+        <ul class="price-features">
+          <li>Full client workspace</li>
+          <li>Payments + revisions</li>
+          <li>No subscription</li>
+          <li>One project at a time</li>
+        </ul>
+        <button class="btn btn-ghost btn-lock-price" style="justify-content:center;width:100%;">Unlock a
+          project</button>
+      </article>
+    </div>
+  </section>
+
+  <!-- ─── faq ─── -->
+  <section class="faq wrap" id="faq" data-screen-label="09 FAQ">
+    <div class="sec-head">
+      <span class="eyebrow">FAQ</span>
+      <h2>Questions about <em>early access.</em></h2>
+    </div>
+    <div class="faq-list" id="faq-list">
+      <div class="faq-item" data-open="true">
+        <button class="faq-q">Why shouldn't I just use WhatsApp + Drive?
+          <span class="faq-q-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>You can — most freelancers do. But work scatters across chats, files get buried, payments slip. SoloFlow
+            replaces that chaos with one shareable link your client can bookmark — progress, files, invoices, payments,
+            all in one place.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">When does SoloFlow launch publicly?
+          <span class="faq-q-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>Public launch is targeted for Q3 2026. Early-access members get in 4–6 weeks before launch and lock in
+            founding pricing forever.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What do I get on the waitlist?
+          <span class="faq-q-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>50% off Pro and Starter plans locked forever, founding member badge, and direct access to the team to shape
+            the roadmap.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is the free plan really free forever?
+          <span class="faq-q-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>Yes. Free plan, free forever, one client portal. No card. Upgrade to Pro only when you need more.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">How does Razorpay/Stripe integration work?
+          <span class="faq-q-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>Connect your existing Razorpay or Stripe account in under five minutes. Clients pay through their portal —
+            funds settle on the standard payout schedule directly to your bank.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Will my founding pricing change after launch?
+          <span class="faq-q-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>Never. Whatever price you lock during early access is yours forever — even after public launch. Founding
+            member promise.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Can I export my data?
+          <span class="faq-q-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>Always. Export client data, project history, files, and invoices anytime — including on the free plan. Your
+            data is yours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── final cta ─── -->
+  <section class="cta-final" id="cta" data-screen-label="10 Final CTA">
+    <div class="cta-final-inner">
+      <span class="eyebrow" style="color:oklch(78% 0.16 75);justify-content:center;display:inline-flex;">First 100
+        founders</span>
+      <h2 style="margin-top:14px;">Stop juggling tools.<br />Start <em>getting paid.</em></h2>
+      <p>Lock in 50% off forever. Launching soon. Don't pay full price when SoloFlow goes public.</p>
+
+      <div id="cta-form-state">
+        <form id="cta-waitlist-form" action="https://formspree.io/f/mdaygdeq" method="POST"
+          style="display:flex;flex-direction:column;gap:12px;max-width:320px;margin:0 auto;">
+          <input type="text" name="name" placeholder="Your name" required class="input-control"
+            style="background:rgba(255,255,255,0.03);color:var(--dark-ink);border:1px solid rgba(255,255,255,0.12);padding:14px 18px;backdrop-filter:blur(8px);" />
+          <input type="email" name="email" placeholder="Your email address" required class="input-control"
+            style="background:rgba(255,255,255,0.03);color:var(--dark-ink);border:1px solid rgba(255,255,255,0.12);padding:14px 18px;backdrop-filter:blur(8px);" />
+          <button id="cta-submit-btn" type="submit" class="btn btn-primary"
+            style="background:var(--dark-ink);color:var(--dark-bg);width:100%;justify-content:center;padding:14px;margin-top:4px;">Get
+            early access <span style="opacity:.65;margin-left:6px;">→</span></button>
+        </form>
+      </div>
+
+      <div id="cta-success-state" class="hidden" style="text-align:center;">
+        <div
+          style="width:48px;height:48px;background:var(--brand);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 style="font-size:24px;font-weight:600;margin-bottom:8px;color:var(--dark-ink);">You're in, <span
+            id="cta-success-name"></span>!</h3>
+        <p style="color:var(--dark-ink-2);font-size:15px;">We'll email you the moment early access opens.<br />Founding
+          price is locked for you.</p>
+      </div>
+
+      <div
+        style="margin-top:22px;font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--dark-ink-2);letter-spacing:0.06em;display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <span>✓ SECURE</span>
+        <span>✓ NO SPAM</span>
+        <span>✓ 30-DAY FREE TRIAL</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── price lock modal ─── -->
+  <div id="price-modal" class="modal-overlay">
+    <div class="modal-content" id="price-modal-content">
+      <button id="price-modal-close" class="modal-close">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Form State -->
+      <div id="price-modal-form-state">
+        <div class="modal-icon">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <h3 class="modal-title">Lock in founding price</h3>
+        <p class="modal-desc">
+          You've locked the founding price. We'll notify you right before launch.<br />
+          <strong style="color:var(--brand);">This price will NOT be available after launch.</strong>
+        </p>
+
+        <form id="price-lock-form" action="https://formspree.io/f/xojygvap" method="POST" class="modal-form">
+          <div class="input-group">
+            <label>Your Name <span style="color:#ef4444;">*</span></label>
+            <input type="text" name="name" required placeholder="Aman Verma" class="input-control" />
+          </div>
+          <div class="input-group">
+            <label>Best Email <span style="color:#ef4444;">*</span></label>
+            <input type="email" name="email" required placeholder="aman@example.com" class="input-control" />
+          </div>
+          <button type="submit" id="price-lock-submit" class="btn btn-primary"
+            style="margin-top:8px;padding:14px;width:100%;">
+            Confirm & Lock Price
+          </button>
+        </form>
+      </div>
+
+      <!-- Success State -->
+      <div id="price-modal-success-state" class="hidden" style="text-align:center;">
+        <div class="modal-icon" style="margin:0 auto 20px;background:var(--brand-soft);">
+          <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 class="modal-title">You're in.</h3>
+        <p class="modal-desc">
+          You're among the first users to lock this price.<br />
+          We'll email you when access opens.
+        </p>
+        <button id="price-modal-done" class="btn btn-ghost" style="width:100%;justify-content:center;">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── outside india modal ─── -->
+  <div id="outside-modal" class="modal-overlay">
+    <div class="modal-content" id="outside-modal-content">
+      <button id="outside-modal-close" class="modal-close">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div id="outside-modal-form-state">
+        <div class="modal-icon">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253" />
+          </svg>
+        </div>
+        <h3 class="modal-title">Join from anywhere</h3>
+        <p class="modal-desc">We're launching globally soon. Drop your details and we'll reach out when SoloFlow is
+          available in your region.</p>
+
+        <form id="outside-india-form" action="https://formspree.io/f/mykoggog" method="POST" class="modal-form">
+          <div class="input-group">
+            <label>Your Name</label>
+            <input type="text" name="name" placeholder="Your name" required class="input-control" />
+          </div>
+          <div class="input-group">
+            <label>Email <span style="color:#ef4444;">*</span></label>
+            <input type="email" name="email" placeholder="you@example.com" required class="input-control" />
+          </div>
+          <button type="submit" id="outside-submit-btn" class="btn btn-primary"
+            style="margin-top:8px;padding:14px;width:100%;">
+            Join the waitlist →
+          </button>
+        </form>
+      </div>
+
+      <div id="outside-modal-success" class="hidden" style="text-align:center;">
+        <div class="modal-icon" style="margin:0 auto 20px;background:var(--brand-soft);">
+          <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 class="modal-title">You're on the list.</h3>
+        <p class="modal-desc">We'll notify you as soon as SoloFlow is available in your region.</p>
+        <button id="outside-modal-done" class="btn btn-ghost" style="width:100%;justify-content:center;">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── footer ─── -->
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div class="logo">
+        <span class="logo-mark"></span>
+        <span>SoloFlow</span>
+      </div>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#how">How it works</a>
+        <a href="https://x.com/v1shhnuu7">X</a>
+      </div>
+      <div>© 2026 SoloFlow</div>
+    </div>
+  </footer>
+
+  <!-- ─── scripts ─── -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+    integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+    integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+    integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+    crossorigin="anonymous"></script>
+  <script type="text/babel" src="sl/project/animated-grid-pattern.jsx"></script>
+  <script type="text/babel" src="sl/project/tweaks-panel.jsx"></script>
+  <script type="text/babel" src="sl/project/scenes.jsx"></script>
+  <script type="text/babel" src="sl/project/mockups.jsx"></script>
+  <script type="text/babel" src="sl/project/app.jsx"></script>
+  <script>
+    document.querySelectorAll('.magic-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.setProperty('--mouse-x', `-350px`);
+        card.style.setProperty('--mouse-y', `-350px`);
+      });
+    });
+  </script>
+</body>
+
+</html>
