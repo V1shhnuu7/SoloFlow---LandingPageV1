@@ -303,7 +303,7 @@ export default function How() {
           </motion.span>
           <motion.h2 variants={fadeUp} className="mb-4" style={{ fontSize: "clamp(38px, 4.7vw, 66px)", fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1.05 }}>
             Live in{" "}
-            <em style={{ fontFamily: "var(--font-instrument-serif)", fontStyle: "italic", fontWeight: 400, color: "var(--sf-accent)", fontSize: "0.96em" }}>
+            <em style={{ fontWeight: 500, color: "var(--sf-accent)", fontStyle: "normal" }}>
               under sixty
             </em>{" "}
             seconds.
@@ -338,11 +338,9 @@ export default function How() {
                       <span
                         className="leading-none"
                         style={{
-                          fontFamily: "var(--font-instrument-serif)",
-                          fontStyle: "italic",
-                          fontWeight: 400,
-                          fontSize: "clamp(72px, 9vw, 128px)",
-                          color: "var(--sf-brand)",
+                          fontWeight: 600,
+                          fontSize: "clamp(56px, 7.5vw, 96px)",
+                          color: "var(--sf-accent)",
                           letterSpacing: "-0.04em",
                         }}>
                         {step.num}

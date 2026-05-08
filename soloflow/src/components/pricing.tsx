@@ -97,16 +97,7 @@ export default function Pricing() {
           </h2>
           <p className="mb-8" style={{ color: "var(--sf-ink-2)", fontSize: 17 }}>
             Choose the right plan for the way you work — founding pricing locks in{" "}
-            <em
-              style={{
-                fontFamily: "var(--font-instrument-serif)",
-                fontStyle: "italic",
-                fontWeight: 400,
-                color: "var(--sf-brand)",
-              }}
-            >
-              forever.
-            </em>
+            <em style={{ fontWeight: 500, color: "var(--sf-accent)", fontStyle: "normal" }}>forever.</em>
           </p>
 
           {/* Local / International toggle */}

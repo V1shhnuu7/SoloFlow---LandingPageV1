@@ -38,7 +38,7 @@ export default function Testimonials() {
           </motion.span>
           <motion.h2 variants={fadeUp} className="mb-3" style={{ fontSize: "clamp(38px, 4.7vw, 66px)", fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1.05 }}>
             Freelancers tired of{" "}
-            <em style={{ fontFamily: "var(--font-instrument-serif)", fontStyle: "italic", fontWeight: 400, color: "var(--sf-accent)", fontSize: "0.96em" }}>chasing payments.</em>
+            <em style={{ fontWeight: 500, color: "var(--sf-accent)", fontStyle: "normal" }}>chasing payments.</em>
           </motion.h2>
           <motion.p variants={fadeUpSm} style={{ color: "var(--sf-ink-2)", fontSize: 17 }}>Early users told us what's broken. Then they told us what they'd pay for.</motion.p>
         </motion.div>

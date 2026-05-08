@@ -20,8 +20,9 @@ const BentoGrid = ({ children, className, ...props }: BentoGridProps) => {
   return (
     <div
       className={cn(
-        // mobile: 1-col stacked, modest height. desktop: taller rows + bigger gap for breathing room.
-        "grid w-full grid-cols-3 gap-4 auto-rows-[22rem] md:auto-rows-[24rem] lg:auto-rows-[27rem] lg:gap-5",
+        // Mobile: 1-col stacked (col-span-3 default), shorter rows, tighter gap so cards don't tower.
+        // Desktop: taller rows + bigger gap for breathing room.
+        "grid w-full grid-cols-3 gap-3 auto-rows-[20rem] sm:gap-4 sm:auto-rows-[22rem] md:auto-rows-[24rem] lg:auto-rows-[27rem] lg:gap-5",
         className
       )}
       {...props}
@@ -47,13 +48,13 @@ const BentoCard = ({
     )}
     {...props}
   >
-    <div>{background}</div>
-    <div className="p-6 lg:p-7">
-      <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2.5 lg:gap-3 transition-all duration-300 lg:group-hover:-translate-y-10">
-        <h3 className="text-[19.5px] lg:text-[22px] font-semibold tracking-tight text-neutral-800 dark:text-neutral-300">
+    <div className="sf-bento-bg">{background}</div>
+    <div className="p-5 sm:p-6 lg:p-7">
+      <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2 sm:gap-2.5 lg:gap-3 transition-all duration-300 lg:group-hover:-translate-y-10">
+        <h3 className="text-[18px] sm:text-[19.5px] lg:text-[22px] font-semibold tracking-tight text-neutral-800 dark:text-neutral-300">
           {name}
         </h3>
-        <p className="max-w-md text-[13.5px] lg:text-[15px] leading-relaxed text-neutral-500">{description}</p>
+        <p className="max-w-md text-[13px] sm:text-[13.5px] lg:text-[15px] leading-relaxed text-neutral-500">{description}</p>
       </div>
 
       <div

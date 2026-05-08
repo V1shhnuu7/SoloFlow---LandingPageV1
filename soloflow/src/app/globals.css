@@ -161,6 +161,11 @@
   }
 }
 
+/* Legacy alias — accent text now uses the same Geist sans as headings. */
+:root {
+  --font-instrument-serif: var(--font-geist-sans);
+}
+
 /* ─── SoloFlow design tokens ─── */
 :root {
   --sf-bg: oklch(98.6% 0.004 85);
@@ -200,13 +205,14 @@
   --font-serif: var(--font-instrument-serif);
 }
 
-/* ─── Word rotator ─── */
-@keyframes rotateWords {
-  0%, 20%   { transform: translateY(0); }
-  25%, 45%  { transform: translateY(-1.5em); }
-  50%, 70%  { transform: translateY(-3.0em); }
-  75%, 95%  { transform: translateY(-4.5em); }
-  100%      { transform: translateY(-6.0em); }
+/* ─── Hero rotating word — soft fade-up on each word swap ─── */
+@keyframes rotating-word-in {
+  from { opacity: 0; transform: translateY(0.3em); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.sf-rotating-word {
+  animation: rotating-word-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
 }
 
 /* ─── Shiny button ─── */
@@ -268,13 +274,32 @@
   50%      { opacity: 0.32; }
 }
 
-/* Mobile: collapse the desktop-style sidebar inside scene mockups so main content reads */
+/* Mobile-only adjustments for cramped dashboard mockups */
 @media (max-width: 639px) {
+  /* Hero showcase scenes — collapse the desktop sidebar, give main content full width */
   .sf-scene-grid {
     grid-template-columns: 1fr !important;
   }
   .sf-scene-sidebar {
     display: none !important;
+  }
+
+  /* The scenes are designed for ~1000px-wide desktop frames. On a 320–430px mobile frame
+     the inner content stays at its desktop pixel sizes and overflows / cramps.
+     Solution: scale the scene root down by 65% with top-left origin so it visually fits the
+     mobile frame body. Then expand its width 1/scale = 154% so the un-scaled content layout
+     still reflows at desktop dimensions before scaling. */
+  .sf-scene-frame-body > .sf-scene {
+    transform-origin: top left;
+    transform: scale(0.62);
+    width: 161.3%;
+    height: 161.3%;
+  }
+
+  /* Bento mockups are designed for wide cards — on mobile, fade them so they read as
+     subtle decoration. The title/description become the card's primary anchor. */
+  .sf-bento-bg {
+    opacity: 0.42;
   }
 }
 

@@ -31,18 +31,18 @@ export default function Compare() {
           </motion.span>
           <motion.h2 variants={fadeUp} className="mb-3" style={{ fontSize: "clamp(38px, 4.7vw, 66px)", fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1.05 }}>
             Six tools, or{" "}
-            <em style={{ fontFamily: "var(--font-instrument-serif)", fontStyle: "italic", fontWeight: 400, color: "var(--sf-accent)", fontSize: "0.96em" }}>one</em>.
+            <em style={{ fontWeight: 500, color: "var(--sf-accent)", fontStyle: "normal" }}>one</em>.
           </motion.h2>
           <motion.p variants={fadeUpSm} style={{ color: "var(--sf-ink-2)", fontSize: 17 }}>What you're using now versus what you could be using.</motion.p>
         </motion.div>
 
+        {/* DESKTOP: 3-column table */}
         <motion.div
           variants={scaleIn}
           {...inView}
-          className="rounded-[22px] border overflow-hidden"
+          className="hidden md:block rounded-[22px] border overflow-hidden"
           style={{ borderColor: "var(--sf-line)", background: "var(--sf-bg)", boxShadow: "0 1px 2px oklch(0% 0 0 / 0.03)" }}
         >
-          {/* Header */}
           <div className="grid" style={{ gridTemplateColumns: "1.4fr 1.6fr 1.2fr", borderBottom: "1px solid var(--sf-line)" }}>
             {["What you do", "Today (the stack)", "SoloFlow"].map((h, i) => (
               <div key={h} className="px-6 py-3.5 font-mono text-[11.5px] uppercase tracking-[0.08em] border-l first:border-l-0"
@@ -68,6 +68,34 @@ export default function Compare() {
               </motion.div>
             ))}
           </motion.div>
+        </motion.div>
+
+        {/* MOBILE: stacked cards — each row becomes its own comparison card */}
+        <motion.div className="md:hidden flex flex-col gap-3" variants={stagger(0.06, 0.1)} {...inView}>
+          {rows.map(r => (
+            <motion.div
+              key={r.task}
+              variants={fadeUpSm}
+              className="rounded-[14px] border overflow-hidden"
+              style={{ borderColor: "var(--sf-line)", background: "var(--sf-bg)", boxShadow: "0 1px 2px oklch(0% 0 0 / 0.025)" }}
+            >
+              <div className="px-4 py-3 border-b" style={{ borderColor: "var(--sf-line)", background: "var(--sf-bg-soft)" }}>
+                <div className="font-mono text-[10px] uppercase tracking-[0.08em] mb-0.5" style={{ color: "var(--sf-ink-3)" }}>What you do</div>
+                <div className="text-[15px] font-semibold" style={{ color: "var(--sf-ink)", letterSpacing: "-0.01em" }}>{r.task}</div>
+              </div>
+              <div className="px-4 py-3 border-b" style={{ borderColor: "var(--sf-line-2)" }}>
+                <div className="font-mono text-[10px] uppercase tracking-[0.08em] mb-1" style={{ color: "var(--sf-ink-3)" }}>Today</div>
+                <div className="text-[13.5px]" style={{ color: "var(--sf-ink-3)", textDecoration: "line-through", textDecorationColor: "color-mix(in oklab, var(--sf-ink-3) 40%, transparent)" }}>{r.old}</div>
+              </div>
+              <div className="px-4 py-3" style={{ background: "color-mix(in oklab, var(--sf-brand-soft) 60%, var(--sf-bg))" }}>
+                <div className="font-mono text-[10px] uppercase tracking-[0.08em] mb-1" style={{ color: "var(--sf-brand)" }}>SoloFlow</div>
+                <div className="flex items-start gap-2">
+                  <Check />
+                  <div className="text-[13.5px] font-medium" style={{ color: "var(--sf-ink)" }}>{r.sf}</div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>

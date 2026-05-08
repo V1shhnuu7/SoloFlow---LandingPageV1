@@ -72,7 +72,7 @@ export default function CtaFinal() {
         <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
           <h2 style={{ fontSize: "clamp(38px, 5.5vw, 76px)", fontWeight: 500, letterSpacing: "-0.03em", color: "var(--sf-dark-ink)", lineHeight: 1.05 }}>
             Turn your workflow into{" "}
-            <em style={{ fontFamily: "var(--font-instrument-serif)", fontStyle: "italic", fontWeight: 400, color: "oklch(78% 0.10 258)", fontSize: "0.96em", letterSpacing: "-0.015em" }}>
+            <em style={{ fontWeight: 500, color: "oklch(78% 0.10 258)", fontStyle: "normal" }}>
               clarity
             </em>
           </h2>

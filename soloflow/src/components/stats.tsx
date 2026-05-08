@@ -28,7 +28,7 @@ export default function Stats() {
             <div className="font-medium tracking-tight" style={{ fontSize: "clamp(32px, 3.5vw, 44px)", color: "var(--sf-ink)", letterSpacing: "-0.03em" }}>
               {s.num}
               {s.suffix && (
-                <em style={{ fontFamily: "var(--font-instrument-serif)", fontStyle: "italic", fontWeight: 400, color: "var(--sf-accent)", fontSize: "0.96em" }}>
+                <em style={{ fontWeight: 500, color: "var(--sf-accent)", fontStyle: "normal" }}>
                   {s.suffix}
                 </em>
               )}

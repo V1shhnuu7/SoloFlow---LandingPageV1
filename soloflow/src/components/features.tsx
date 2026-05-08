@@ -709,7 +709,7 @@ export default function Features() {
           </motion.span>
           <motion.h2 variants={fadeUp} className="mb-3" style={{ fontSize: "clamp(38px, 4.7vw, 66px)", fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1.05 }}>
             Built for{" "}
-            <em style={{ fontFamily: "var(--font-instrument-serif)", fontStyle: "italic", fontWeight: 400, color: "var(--sf-accent)", fontSize: "0.96em" }}>modern</em>{" "}
+            <em style={{ fontWeight: 500, color: "var(--sf-accent)", fontStyle: "normal" }}>modern</em>{" "}
             client work.
           </motion.h2>
           <motion.p variants={fadeUpSm} className="text-lg mx-auto" style={{ color: "var(--sf-ink-2)", maxWidth: 560 }}>

@@ -1100,12 +1100,24 @@ function ScenePayments() {
 
 const scenes = [SceneWorkspace, SceneCreatePortal, ScenePortal, SceneInvoices];
 
+const ROTATING_WORDS = ["freelance", "design", "consulting", "agency"] as const;
+
 export default function Hero() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [wordIndex, setWordIndex] = useState(0);
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLSpanElement>(null);
   const progressRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
+  // Rotating heading word — simple state swap. The word stays inline with the heading,
+  // taking its natural width, so it always aligns with the surrounding text.
+  useEffect(() => {
+    const id = setInterval(() => {
+      setWordIndex(i => (i + 1) % ROTATING_WORDS.length);
+    }, 2200);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     if (paused) return;
@@ -1239,12 +1251,16 @@ export default function Hero() {
 
         <motion.h1 variants={fadeUp} className="mb-3 sm:mb-4 lg:mb-5" style={{ fontSize: "clamp(36px, 6.2vw, 84px)", fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1.04 }}>
           One link to run your entire{" "}
-          <span style={{ display: "inline-block", verticalAlign: "top", overflow: "hidden", height: "1.5em", marginBottom: "-0.45em", position: "relative", top: "0.05em", paddingRight: "0.15em" }}>
-            <span style={{ display: "flex", flexDirection: "column", animation: "rotateWords 8s infinite cubic-bezier(0.2,0.8,0.2,1)" }}>
-              {["freelance", "design", "consulting", "agency", "freelance"].map((w, i) => (
-                <span key={i} style={{ display: "block", height: "1.5em", lineHeight: "1.05em", fontFamily: "var(--font-instrument-serif)", fontStyle: "italic", fontWeight: 400, color: "var(--sf-accent)", letterSpacing: "-0.02em" }}>{w}</span>
-              ))}
-            </span>
+          <span
+            key={wordIndex}
+            className="sf-rotating-word"
+            style={{
+              color: "var(--sf-accent)",
+              fontWeight: 500,
+              display: "inline-block",
+            }}
+          >
+            {ROTATING_WORDS[wordIndex]}
           </span>{" "}
           business.
         </motion.h1>
@@ -1413,7 +1429,7 @@ export default function Hero() {
               </div>
               <div className="w-8 sm:w-16 flex-shrink-0" />
             </div>
-            <div className="relative aspect-[4/3] sm:aspect-[5/4] md:aspect-[16/10]" style={{ background: PD.pageBg }}>
+            <div className="sf-scene-frame-body relative overflow-hidden aspect-[4/3] sm:aspect-[5/4] md:aspect-[16/10]" style={{ background: PD.pageBg }}>
               {scenes.map((Scene, i) => (
                 <div
                   key={i}
